@@ -151,6 +151,50 @@ body {
 .inp-orange:focus { border-color:var(--event); }
 .inp-brown  { border:2px solid rgba(92,138,60,.3); background:rgba(240,248,235,.4); }
 .inp-brown:focus  { border-color:var(--camp); }
+.inp-green  { border:2px solid rgba(58,179,106,.3); background:rgba(230,248,238,.4); }
+.inp-green:focus  { border-color:var(--grass); }
+
+/* loc-tab 共通（カード1・2で使用） */
+.loc-tabs { display:flex; gap:6px; margin-bottom:10px; }
+.loc-tab-green {
+  flex:1; padding:9px 8px; border-radius:8px; cursor:pointer; text-align:center;
+  font-family:var(--sans); font-size:11px; font-weight:700;
+  border:1.5px solid rgba(58,179,106,.28); background:transparent; color:#2a6a42;
+  transition:all .15s;
+}
+.loc-tab-green.active { background:var(--grass); border-color:var(--grass); color:#fff; }
+.loc-tab-orange {
+  flex:1; padding:9px 8px; border-radius:8px; cursor:pointer; text-align:center;
+  font-family:var(--sans); font-size:11px; font-weight:700;
+  border:1.5px solid rgba(224,92,42,.28); background:transparent; color:#8a4020;
+  transition:all .15s;
+}
+.loc-tab-orange.active { background:var(--event); border-color:var(--event); color:#fff; }
+.gps-row-green {
+  background:rgba(230,248,238,.5); border:1px solid rgba(58,179,106,.22);
+  border-radius:8px; padding:8px 12px; margin-bottom:8px;
+  display:flex; align-items:center; gap:8px;
+}
+.gps-row-orange {
+  background:rgba(255,240,230,.5); border:1px solid rgba(224,92,42,.2);
+  border-radius:8px; padding:8px 12px; margin-bottom:8px;
+  display:flex; align-items:center; gap:8px;
+}
+.gps-led { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.gps-led.green  { background:#3d7a50; box-shadow:0 0 6px #3d7a50; animation:blink 3s ease-in-out infinite; }
+.gps-led.yellow { background:#c07830; animation:blink .8s ease-in-out infinite; }
+.gps-led.red    { background:#b84a2a; }
+.gps-label { font-size:11px; flex:1; font-family:'Noto Sans JP',sans-serif; }
+.gps-label-green  { color:#1a5030; }
+.gps-label-orange { color:#6a3018; }
+.gps-retry-btn {
+  font-size:10px; font-family:var(--sans); background:transparent;
+  border-radius:5px; color:inherit; padding:3px 8px; cursor:pointer; display:none;
+}
+.gps-retry-btn-green  { border:1px solid rgba(58,179,106,.35); }
+.gps-retry-btn-green:hover  { background:rgba(58,179,106,.08); }
+.gps-retry-btn-orange { border:1px solid rgba(224,92,42,.3); }
+.gps-retry-btn-orange:hover { background:rgba(224,92,42,.07); }
 .sep { font-size:.85rem; color:#888; font-weight:700; }
 .hint-txt { font-family:'Noto Sans JP',sans-serif; font-size:.69rem; color:#8a6a5a; margin-bottom:14px; text-align:left; line-height:1.5; }
 
@@ -242,6 +286,32 @@ body {
 }
 .groc-chip.active { background:#2a9a6a; border-color:#2a9a6a; color:#fff; }
 .groc-chip:hover:not(.active) { border-color:#2a9a6a; background:rgba(42,154,106,.06); }
+
+/* ===== RIVER CARD ===== */
+.btn-riv { background: linear-gradient(135deg, #1a8abf, #0d5f8a); box-shadow: 0 4px 16px rgba(26,138,191,.35); }
+.btn-riv:hover { box-shadow: 0 8px 24px rgba(26,138,191,.45); }
+.btn-sub-riv { color: #0d5075; border: 2px solid rgba(26,138,191,.3); }
+.btn-sub-riv:hover { background: rgba(26,138,191,.07); border-color: #1a8abf; }
+.copied-riv { color: #0d6090; }
+.tag-riv { background: rgba(26,138,191,.09); color: #0a4a70; border: 1px solid rgba(26,138,191,.22); }
+.card h2 .blue { color: #0d6a9a; }
+#rivLocTabs { display:flex; gap:6px; margin-bottom:10px; }
+.riv-loc-tab { flex:1; padding:9px 8px; border-radius:8px; cursor:pointer; text-align:center; font-family:var(--sans); font-size:11px; font-weight:700; border:1.5px solid rgba(26,138,191,.25); background:transparent; color:#0d5075; transition:all .15s; }
+.riv-loc-tab.active { background:#1a8abf; border-color:#1a8abf; color:#fff; }
+#rivGpsRow { background:rgba(224,244,255,.5); border:1px solid rgba(26,138,191,.2); border-radius:8px; padding:8px 12px; margin-bottom:8px; display:flex; align-items:center; gap:8px; }
+.riv-led { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.riv-led.green  { background:#3d7a50; box-shadow:0 0 6px #3d7a50; animation:blink 3s ease-in-out infinite; }
+.riv-led.yellow { background:#c07830; animation:blink .8s ease-in-out infinite; }
+.riv-led.red    { background:#b84a2a; }
+#rivLocLabel { font-size:11px; color:#0a4060; flex:1; font-family:'Noto Sans JP',sans-serif; }
+#rivLocRetryBtn { font-size:10px; font-family:var(--sans); background:transparent; border:1px solid rgba(26,138,191,.3); border-radius:5px; color:#0d6080; padding:3px 8px; cursor:pointer; display:none; }
+#rivLocRetryBtn:hover { background:rgba(26,138,191,.08); }
+.inp-riv { border:2px solid rgba(26,138,191,.25); background:rgba(224,244,255,.3); }
+.inp-riv:focus { border-color:#1a8abf; }
+.riv-creature-chips { display:flex; gap:5px; flex-wrap:wrap; margin-bottom:2px; }
+.riv-chip { font-family:var(--sans); font-size:11px; padding:5px 11px; border-radius:20px; border:1.5px solid rgba(26,138,191,.28); background:transparent; color:#0d5075; cursor:pointer; transition:all .12s; white-space:nowrap; font-weight:700; }
+.riv-chip.active { background:#1a8abf; border-color:#1a8abf; color:#fff; }
+.riv-chip:hover:not(.active) { border-color:#1a8abf; background:rgba(26,138,191,.06); }
 
 /* ===== DIVIDER ===== */
 .divider {
@@ -425,14 +495,44 @@ body {
 <div class="card">
   <span class="card-icon">🏃‍♂️</span>
   <h2>周辺の<span class="green">子連れ施設</span>を<br>さがす</h2>
-  <p class="sub">現在地周辺の遊具充実の公園・<br>体を動かせる施設をマップ付きで表示</p>
-  <a id="btnFacility" class="btn btn-green" href="#" target="_blank">🗺️ 今すぐ周辺を検索する</a>
+  <p class="sub">遊具充実の公園・体を動かせる施設を<br>指定日時に営業中のものだけ表示します</p>
+
+  <!-- 起点モード -->
+  <div class="loc-tabs">
+    <button class="loc-tab-green active" id="facTabGps" onclick="facSetLocMode('gps')">📍 現在地を使う</button>
+    <button class="loc-tab-green" id="facTabText" onclick="facSetLocMode('text')">✏️ 地域を入力する</button>
+  </div>
+  <!-- GPS行 -->
+  <div class="gps-row-green" id="facGpsRow">
+    <div class="gps-led yellow" id="facLed"></div>
+    <div class="gps-label gps-label-green" id="facLocLabel">現在地を取得中…</div>
+    <button class="gps-retry-btn gps-retry-btn-green" id="facLocRetryBtn" onclick="facGetLocation()">再取得</button>
+  </div>
+  <!-- テキスト入力行 -->
+  <div class="row" id="facTextRow" style="display:none;">
+    <span class="row-label">📍 地域</span>
+    <input type="text" id="facRegion" class="inp inp-green" placeholder="例：海陽町・徳島県南部">
+  </div>
+
+  <!-- 日時指定 -->
+  <div class="row">
+    <span class="row-label">📅 日付</span>
+    <input type="date" id="facDate" class="inp inp-green">
+  </div>
+  <div class="row">
+    <span class="row-label">🕐 時刻</span>
+    <input type="time" id="facTime" class="inp inp-green">
+    <span class="sep" style="font-size:.75rem;color:#888;white-space:nowrap;">以降に営業中</span>
+  </div>
+
+  <p class="hint-txt">常時開放の公園・広場は時間に関わらず含めます</p>
+  <button class="btn btn-green" onclick="openFacility()">🗺️ 子連れ施設を検索する</button>
   <button class="btn-sub btn-sub-green" onclick="doCopy('facility')">📋 プロンプトだけコピー</button>
   <div class="copied copied-green" id="c-facility">✅ コピーしました！</div>
   <div class="tags">
     <span class="tag tag-g">🛝 遊具充実の公園を優先</span>
     <span class="tag tag-g">🏃 体を動かせる施設</span>
-    <span class="tag tag-g">📍 現在地から検索</span>
+    <span class="tag tag-g">⏰ 指定日時に営業中のみ</span>
   </div>
 </div>
 
@@ -441,10 +541,24 @@ body {
   <span class="card-icon">🎪</span>
   <h2>地域の<span class="orange">子連れイベント</span>を<br>さがす</h2>
   <p class="sub">町の公式サイト・地域情報・地元カレンダーを優先。<br>じゃらん・いこーよ等の大手まとめは除外。</p>
-  <div class="row">
+
+  <!-- 起点モード -->
+  <div class="loc-tabs">
+    <button class="loc-tab-orange active" id="evTabGps" onclick="evSetLocMode('gps')">📍 現在地を使う</button>
+    <button class="loc-tab-orange" id="evTabText" onclick="evSetLocMode('text')">✏️ 地域を入力する</button>
+  </div>
+  <!-- GPS行 -->
+  <div class="gps-row-orange" id="evGpsRow">
+    <div class="gps-led yellow" id="evLed"></div>
+    <div class="gps-label gps-label-orange" id="evLocLabel">現在地を取得中…</div>
+    <button class="gps-retry-btn gps-retry-btn-orange" id="evLocRetryBtn" onclick="evGetLocation()">再取得</button>
+  </div>
+  <!-- テキスト入力行 -->
+  <div class="row" id="evTextRow" style="display:none;">
     <span class="row-label">📍 地域</span>
     <input type="text" id="evRegion" class="inp inp-orange" placeholder="例：海陽町・徳島県南部" value="海陽町・徳島県南部">
   </div>
+
   <div class="row">
     <span class="row-label">📅 日付</span>
     <input type="date" id="evFrom" class="inp inp-orange">
@@ -624,22 +738,140 @@ body {
   </div>
 </div>
 
+<!-- ===== カード6: 希少生物のいる川 ===== -->
+<div class="card">
+  <span class="card-icon">🦎</span>
+  <h2>周辺の<span class="blue">希少生物がいる川</span>を<br>さがす</h2>
+  <p class="sub">現在地や指定した地点の周辺で、<br>珍しい生き物がいる川・渓流をClaudeが調べます。</p>
+
+  <!-- 起点モード -->
+  <div id="rivLocTabs">
+    <button class="riv-loc-tab active" id="rivTabGps" onclick="rivSetLocMode('gps')">📍 現在地を使う</button>
+    <button class="riv-loc-tab" id="rivTabText" onclick="rivSetLocMode('text')">✏️ 地域を入力する</button>
+  </div>
+
+  <!-- GPS行 -->
+  <div id="rivGpsRow">
+    <div class="riv-led yellow" id="rivLed"></div>
+    <div id="rivLocLabel">現在地を取得中…</div>
+    <button id="rivLocRetryBtn" onclick="rivGetLocation()">再取得</button>
+  </div>
+
+  <!-- テキスト入力行 -->
+  <div class="row" id="rivTextRow" style="display:none;">
+    <span class="row-label">📍 地域</span>
+    <input type="text" id="rivRegion" class="inp inp-riv" placeholder="例：海陽町・剣山周辺">
+  </div>
+
+  <!-- 探したい生き物チップ -->
+  <div style="margin-bottom:6px;">
+    <div style="font-size:.78rem;font-weight:700;color:#5a5a5a;margin-bottom:6px;font-family:'Noto Sans JP',sans-serif;">探したい生き物（複数選択可）</div>
+    <div class="riv-creature-chips" id="rivCreatureChips"></div>
+  </div>
+
+  <p class="hint-txt">水質・生息域・アクセス・車での駐車場情報もあわせて調べます</p>
+
+  <button class="btn btn-riv" onclick="openRiv()">🔍 川と生き物を調べる</button>
+  <button class="btn-sub btn-sub-riv" onclick="doCopy('riv')">📋 プロンプトだけコピー</button>
+  <div class="copied copied-riv" id="c-riv">✅ コピーしました！</div>
+  <div class="tags">
+    <span class="tag tag-riv">🐟 希少種・固有種</span>
+    <span class="tag tag-riv">💧 水質・透明度</span>
+    <span class="tag tag-riv">🅿️ 駐車場情報あり</span>
+    <span class="tag tag-riv">📍 現在地 or 地域指定</span>
+  </div>
+</div>
+
 <!-- ============================================================
      JAVASCRIPT
 ============================================================ -->
 <script>
 // ──────────────────────────────────────────
-// 施設検索プロンプト
+// 施設検索
 // ──────────────────────────────────────────
-const FACILITY_PROMPT = `周辺で子連れで遊べる施設を探してください。
-公園は遊具が多い場所を優先して、他にも体を動かせそうな施設（スポーツ施設・体育館・屋内遊び場など）を優先してリストアップしてください。
+(function initFacDatetime(){
+  const now = new Date();
+  document.getElementById('facDate').value = now.toISOString().split('T')[0];
+  document.getElementById('facTime').value = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+})();
+
+let facGLat = null, facGLng = null, facLocMode = 'gps';
+
+function facSetLocMode(mode) {
+  facLocMode = mode;
+  document.getElementById('facTabGps').classList.toggle('active', mode === 'gps');
+  document.getElementById('facTabText').classList.toggle('active', mode === 'text');
+  document.getElementById('facGpsRow').style.display  = mode === 'gps' ? 'flex' : 'none';
+  document.getElementById('facTextRow').style.display = mode === 'text' ? '' : 'none';
+}
+
+function facGetLocation() {
+  const led = document.getElementById('facLed'), label = document.getElementById('facLocLabel'), btn = document.getElementById('facLocRetryBtn');
+  led.className = 'gps-led yellow'; label.textContent = '現在地を取得中…';
+  if (!navigator.geolocation) { led.className='gps-led red'; label.textContent='このブラウザでは位置情報が使えません'; btn.style.display='inline-block'; return; }
+  navigator.geolocation.getCurrentPosition(pos => {
+    facGLat = pos.coords.latitude; facGLng = pos.coords.longitude;
+    led.className = 'gps-led green';
+    label.textContent = `現在地を取得しました（${facGLat.toFixed(4)}, ${facGLng.toFixed(4)}）`;
+    btn.style.display = 'inline-block';
+  }, err => { led.className='gps-led red'; label.textContent='取得失敗: '+err.message; btn.style.display='inline-block'; }, {enableHighAccuracy:true,timeout:12000});
+}
+facGetLocation();
+
+function buildFacilityPrompt() {
+  const date = document.getElementById('facDate').value;
+  const time = document.getElementById('facTime').value;
+  const days = ['日曜','月曜','火曜','水曜','木曜','金曜','土曜'];
+
+  let location = '';
+  if (facLocMode === 'gps' && facGLat) {
+    location = `緯度${facGLat.toFixed(5)}・経度${facGLng.toFixed(5)}の周辺（現在地）`;
+  } else {
+    const region = document.getElementById('facRegion').value.trim();
+    location = region ? region + '周辺' : '現在地周辺';
+  }
+
+  let dateTimeStr = '';
+  if (date && time) {
+    const d = new Date(`${date}T${time}`);
+    dateTimeStr = `${d.getMonth()+1}月${d.getDate()}日（${days[d.getDay()]}）${time}`;
+  } else if (date) {
+    const d = new Date(date + 'T00:00:00');
+    dateTimeStr = `${d.getMonth()+1}月${d.getDate()}日（${days[d.getDay()]}）`;
+  } else {
+    dateTimeStr = '現在';
+  }
+
+  return `${location}で、子連れで遊べる施設を探してください。
+
+【営業条件】
+・${dateTimeStr}の時点で営業中の施設のみ
+・常時開放の公園・広場・河川敷などは時間に関わらず含めてください
+・その日が定休日の施設は除外してください
+
+【施設の優先順位】
+1. 遊具が充実している公園（複合遊具・アスレチック・ブランコなど）
+2. 体を動かせる施設（スポーツ施設・体育館・屋内遊び場・プールなど）
+3. 自然の中で遊べる場所（川遊び・海岸・森など）
+
+【各施設に含めてほしい情報】
+・施設名・場所（住所またはGoogleマップリンク）
+・営業時間・定休日・${dateTimeStr}の営業状況
+・おすすめポイント（何が充実しているか・何歳向きか）
+・駐車場の有無（車で行くため重要）
+・入場料金（無料・有料）
+
 マップ表示もしてください。`;
-document.getElementById('btnFacility').href = `https://claude.ai/new?q=${encodeURIComponent(FACILITY_PROMPT)}`;
+}
+
+function openFacility() {
+  window.open(`https://claude.ai/new?q=${encodeURIComponent(buildFacilityPrompt())}`, '_blank');
+}
 
 // ──────────────────────────────────────────
 // イベント検索
 // ──────────────────────────────────────────
-(function(){
+(function initEvDatetime(){
   const today = new Date();
   const day = today.getDay();
   const diffToSat = ((6 - day) + 7) % 7 || 7;
@@ -650,14 +882,44 @@ document.getElementById('btnFacility').href = `https://claude.ai/new?q=${encodeU
   document.getElementById('evTo').value = fmt(sun);
 })();
 
+let evGLat = null, evGLng = null, evLocMode = 'gps';
+
+function evSetLocMode(mode) {
+  evLocMode = mode;
+  document.getElementById('evTabGps').classList.toggle('active', mode === 'gps');
+  document.getElementById('evTabText').classList.toggle('active', mode === 'text');
+  document.getElementById('evGpsRow').style.display  = mode === 'gps' ? 'flex' : 'none';
+  document.getElementById('evTextRow').style.display = mode === 'text' ? '' : 'none';
+}
+
+function evGetLocation() {
+  const led = document.getElementById('evLed'), label = document.getElementById('evLocLabel'), btn = document.getElementById('evLocRetryBtn');
+  led.className = 'gps-led yellow'; label.textContent = '現在地を取得中…';
+  if (!navigator.geolocation) { led.className='gps-led red'; label.textContent='このブラウザでは位置情報が使えません'; btn.style.display='inline-block'; return; }
+  navigator.geolocation.getCurrentPosition(pos => {
+    evGLat = pos.coords.latitude; evGLng = pos.coords.longitude;
+    led.className = 'gps-led green';
+    label.textContent = `現在地を取得しました（${evGLat.toFixed(4)}, ${evGLng.toFixed(4)}）`;
+    btn.style.display = 'inline-block';
+  }, err => { led.className='gps-led red'; label.textContent='取得失敗: '+err.message; btn.style.display='inline-block'; }, {enableHighAccuracy:true,timeout:12000});
+}
+evGetLocation();
+
 function buildEventPrompt() {
-  const region = document.getElementById('evRegion').value.trim() || '現在地周辺';
+  let location = '';
+  if (evLocMode === 'gps' && evGLat) {
+    location = `緯度${evGLat.toFixed(5)}・経度${evGLng.toFixed(5)}の周辺（現在地）`;
+  } else {
+    const region = document.getElementById('evRegion').value.trim() || '現在地周辺';
+    location = region;
+  }
   const from = document.getElementById('evFrom').value;
-  const to = document.getElementById('evTo').value;
+  const to   = document.getElementById('evTo').value;
   let dateStr = 'この週末';
   if (from && to) dateStr = `${from}〜${to}`;
   else if (from) dateStr = from;
-  return `${region}で${dateStr}に開催される子連れで楽しめるイベントを探してください。
+
+  return `${location}で${dateStr}に開催される子連れで楽しめるイベントを探してください。
 
 【検索の優先順位】
 1. 町・市の公式サイト・行政のイベントカレンダー
@@ -670,6 +932,7 @@ function buildEventPrompt() {
 
 子どもが体を動かせるものや、地域ならではのものを優先してください。`;
 }
+
 function openEvent() {
   window.open(`https://claude.ai/new?q=${encodeURIComponent(buildEventPrompt())}`, '_blank');
 }
@@ -702,7 +965,7 @@ function openCampAi() {
 // ──────────────────────────────────────────
 function doCopy(type) {
   let text;
-  if (type === 'facility') text = FACILITY_PROMPT;
+  if (type === 'facility') text = buildFacilityPrompt();
   else if (type === 'event') text = buildEventPrompt();
   else text = buildCampPrompt();
   navigator.clipboard.writeText(text).then(() => {
@@ -1201,9 +1464,113 @@ function doCopy(type) {
       el.classList.add('show');
       setTimeout(() => el.classList.remove('show'), 2500);
     });
+  } else if (type === 'riv') {
+    navigator.clipboard.writeText(buildRivPrompt()).then(() => {
+      const el = document.getElementById('c-riv');
+      el.classList.add('show');
+      setTimeout(() => el.classList.remove('show'), 2500);
+    });
   } else {
     _origDoCopy(type);
   }
+}
+
+// ──────────────────────────────────────────
+// 希少生物のいる川検索
+// ──────────────────────────────────────────
+const RIV_CREATURES = [
+  { id:'fish',    label:'🐟 淡水魚' },
+  { id:'insect',  label:'🪲 水生昆虫' },
+  { id:'amphi',   label:'🐸 両生類' },
+  { id:'crab',    label:'🦀 甲殻類' },
+  { id:'plant',   label:'🌱 水生植物' },
+  { id:'bird',    label:'🦅 水辺の鳥' },
+  { id:'any',     label:'🔍 なんでも' },
+];
+let rivCreatureSelected = new Set(['fish','insect','amphi']);
+
+(function initRivChips(){
+  const wrap = document.getElementById('rivCreatureChips');
+  RIV_CREATURES.forEach(c => {
+    const b = document.createElement('button');
+    b.className = 'riv-chip' + (rivCreatureSelected.has(c.id) ? ' active' : '');
+    b.textContent = c.label; b.dataset.id = c.id;
+    b.onclick = () => {
+      if (c.id === 'any') {
+        rivCreatureSelected = new Set(['any']);
+        wrap.querySelectorAll('.riv-chip').forEach(x => x.classList.toggle('active', x.dataset.id === 'any'));
+      } else {
+        rivCreatureSelected.delete('any');
+        if (rivCreatureSelected.has(c.id)) { rivCreatureSelected.delete(c.id); b.classList.remove('active'); }
+        else { rivCreatureSelected.add(c.id); b.classList.add('active'); }
+        if (rivCreatureSelected.size === 0) { rivCreatureSelected.add('fish'); wrap.querySelector('[data-id="fish"]').classList.add('active'); }
+        wrap.querySelectorAll('.riv-chip').forEach(x => x.classList.toggle('active', rivCreatureSelected.has(x.dataset.id)));
+      }
+    };
+    wrap.appendChild(b);
+  });
+})();
+
+let rivGLat = null, rivGLng = null, rivLocMode = 'gps';
+
+function rivSetLocMode(mode) {
+  rivLocMode = mode;
+  document.getElementById('rivTabGps').classList.toggle('active', mode === 'gps');
+  document.getElementById('rivTabText').classList.toggle('active', mode === 'text');
+  document.getElementById('rivGpsRow').style.display  = mode === 'gps' ? 'flex' : 'none';
+  document.getElementById('rivTextRow').style.display = mode === 'text' ? '' : 'none';
+}
+
+function rivGetLocation() {
+  const led = document.getElementById('rivLed');
+  const label = document.getElementById('rivLocLabel');
+  const btn = document.getElementById('rivLocRetryBtn');
+  led.className = 'riv-led yellow'; label.textContent = '現在地を取得中…';
+  if (!navigator.geolocation) {
+    led.className = 'riv-led red'; label.textContent = 'このブラウザでは位置情報が使えません';
+    btn.style.display = 'inline-block'; return;
+  }
+  navigator.geolocation.getCurrentPosition(pos => {
+    rivGLat = pos.coords.latitude; rivGLng = pos.coords.longitude;
+    led.className = 'riv-led green';
+    label.textContent = `現在地を取得しました（${rivGLat.toFixed(4)}, ${rivGLng.toFixed(4)}）`;
+    btn.style.display = 'inline-block';
+  }, err => {
+    led.className = 'riv-led red'; label.textContent = '取得失敗: ' + err.message;
+    btn.style.display = 'inline-block';
+  }, {enableHighAccuracy:true, timeout:12000});
+}
+rivGetLocation();
+
+function buildRivPrompt() {
+  let location = '';
+  if (rivLocMode === 'gps' && rivGLat) {
+    location = `緯度${rivGLat.toFixed(5)}・経度${rivGLng.toFixed(5)}の周辺（現在地）`;
+  } else {
+    const region = document.getElementById('rivRegion').value.trim();
+    location = region ? region + '周辺' : '現在地周辺';
+  }
+
+  const creatureLabels = rivCreatureSelected.has('any')
+    ? '希少・珍しい生き物全般'
+    : [...rivCreatureSelected].map(id => RIV_CREATURES.find(c => c.id===id)?.label || '').filter(Boolean).join('・');
+
+  return `${location}で、希少な生き物が見られる川・渓流を探してください。
+探している生き物：${creatureLabels}
+
+【知りたいこと】
+1. おすすめの川・渓流の名前と場所（Googleマップリンクも）
+2. その川で見られる希少種・固有種・珍しい生き物の具体的な名前
+3. 水質・透明度の評判（なぜ綺麗なのか、上流環境なども）
+4. 生き物が見やすい時期・時間帯・ポイント（どのあたりを探せばよいか）
+5. 車でのアクセス方法・駐車場の有無（車で行くため重要）
+6. 注意事項（増水リスク・立入禁止・保護区域など）
+
+地元の人しか知らないようなマイナーな穴場も含めて、「ここに行けば間違いない順」で上位3〜5か所を教えてください。`;
+}
+
+function openRiv() {
+  window.open(`https://claude.ai/new?q=${encodeURIComponent(buildRivPrompt())}`, '_blank');
 }
 
 // ──────────────────────────────────────────
