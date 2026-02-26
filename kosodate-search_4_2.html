@@ -163,6 +163,86 @@ body {
 .tag-r { background:rgba(200,50,50,.08); color:#9a2020; border:1px solid rgba(200,50,50,.2); }
 .tag-w { background:rgba(192,120,48,.1); color:#7a4a10; border:1px solid rgba(192,120,48,.25); }
 
+/* ===== FOOD CARD ===== */
+.btn-food { background: linear-gradient(135deg, #e03060, #aa1040); box-shadow: 0 4px 16px rgba(224,48,96,.35); }
+.btn-food:hover { box-shadow: 0 8px 24px rgba(224,48,96,.45); }
+.btn-sub-food { color: #9a2040; border: 2px solid rgba(224,48,96,.3); }
+.btn-sub-food:hover { background: rgba(224,48,96,.07); border-color: #e03060; }
+.copied-food { color: #aa1040; }
+.tag-f { background: rgba(224,48,96,.09); color: #9a1030; border: 1px solid rgba(224,48,96,.2); }
+.card h2 .red { color: #c0203a; }
+#foodLocTabs { display:flex; gap:6px; margin-bottom:10px; }
+.food-loc-tab {
+  flex:1; padding:9px 8px; border-radius:8px; cursor:pointer; text-align:center;
+  font-family:var(--sans); font-size:11px; font-weight:700;
+  border:1.5px solid rgba(224,48,96,.25); background:transparent; color:#9a3050;
+  transition:all .15s;
+}
+.food-loc-tab.active { background:#e03060; border-color:#e03060; color:#fff; }
+#foodGpsRow {
+  background:rgba(252,228,236,.45); border:1px solid rgba(224,48,96,.2);
+  border-radius:8px; padding:8px 12px; margin-bottom:8px;
+  display:flex; align-items:center; gap:8px;
+}
+.food-led { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.food-led.green  { background:#3d7a50; box-shadow:0 0 6px #3d7a50; animation:blink 3s ease-in-out infinite; }
+.food-led.yellow { background:#c07830; animation:blink .8s ease-in-out infinite; }
+.food-led.red    { background:#b84a2a; }
+#foodLocLabel { font-size:11px; color:#7a4060; flex:1; font-family:'Noto Sans JP',sans-serif; }
+#foodLocRetryBtn { font-size:10px; font-family:var(--sans); background:transparent; border:1px solid rgba(224,48,96,.3); border-radius:5px; color:#9a3050; padding:3px 8px; cursor:pointer; display:none; }
+#foodLocRetryBtn:hover { background:rgba(224,48,96,.07); }
+.inp-food { border:2px solid rgba(224,48,96,.25); background:rgba(252,228,236,.3); }
+.inp-food:focus { border-color:#e03060; }
+.food-now-badge {
+  display:inline-block; font-size:10px; font-family:'Noto Sans JP',sans-serif;
+  background:rgba(224,48,96,.1); color:#aa1030; border:1px solid rgba(224,48,96,.25);
+  border-radius:12px; padding:2px 9px; margin-bottom:12px;
+}
+
+/* ===== GROCERY CARD ===== */
+.btn-groc { background: linear-gradient(135deg, #2a9a6a, #1a7050); box-shadow: 0 4px 16px rgba(42,154,106,.35); }
+.btn-groc:hover { box-shadow: 0 8px 24px rgba(42,154,106,.45); }
+.btn-sub-groc { color: #1a6040; border: 2px solid rgba(42,154,106,.3); }
+.btn-sub-groc:hover { background: rgba(42,154,106,.07); border-color: #2a9a6a; }
+.copied-groc { color: #1a7050; }
+.tag-groc { background: rgba(42,154,106,.09); color: #155040; border: 1px solid rgba(42,154,106,.22); }
+.card h2 .teal { color: #1a8060; }
+#grocLocTabs { display:flex; gap:6px; margin-bottom:10px; }
+.groc-loc-tab {
+  flex:1; padding:9px 8px; border-radius:8px; cursor:pointer; text-align:center;
+  font-family:var(--sans); font-size:11px; font-weight:700;
+  border:1.5px solid rgba(42,154,106,.25); background:transparent; color:#1a6045;
+  transition:all .15s;
+}
+.groc-loc-tab.active { background:#2a9a6a; border-color:#2a9a6a; color:#fff; }
+#grocGpsRow {
+  background:rgba(220,248,235,.5); border:1px solid rgba(42,154,106,.2);
+  border-radius:8px; padding:8px 12px; margin-bottom:8px;
+  display:flex; align-items:center; gap:8px;
+}
+.groc-led { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.groc-led.green  { background:#3d7a50; box-shadow:0 0 6px #3d7a50; animation:blink 3s ease-in-out infinite; }
+.groc-led.yellow { background:#c07830; animation:blink .8s ease-in-out infinite; }
+.groc-led.red    { background:#b84a2a; }
+#grocLocLabel { font-size:11px; color:#1a5038; flex:1; font-family:'Noto Sans JP',sans-serif; }
+#grocLocRetryBtn { font-size:10px; font-family:var(--sans); background:transparent; border:1px solid rgba(42,154,106,.3); border-radius:5px; color:#1a6040; padding:3px 8px; cursor:pointer; display:none; }
+#grocLocRetryBtn:hover { background:rgba(42,154,106,.08); }
+.inp-groc { border:2px solid rgba(42,154,106,.25); background:rgba(220,248,235,.3); }
+.inp-groc:focus { border-color:#2a9a6a; }
+.groc-now-badge {
+  display:inline-block; font-size:10px; font-family:'Noto Sans JP',sans-serif;
+  background:rgba(42,154,106,.1); color:#1a6040; border:1px solid rgba(42,154,106,.25);
+  border-radius:12px; padding:2px 9px; margin-bottom:12px;
+}
+.groc-type-chips { display:flex; gap:5px; flex-wrap:wrap; margin-bottom:12px; }
+.groc-chip {
+  font-family:var(--sans); font-size:11px; padding:5px 11px; border-radius:20px;
+  border:1.5px solid rgba(42,154,106,.28); background:transparent; color:#1a6040;
+  cursor:pointer; transition:all .12s; white-space:nowrap; font-weight:700;
+}
+.groc-chip.active { background:#2a9a6a; border-color:#2a9a6a; color:#fff; }
+.groc-chip:hover:not(.active) { border-color:#2a9a6a; background:rgba(42,154,106,.06); }
+
 /* ===== DIVIDER ===== */
 .divider {
   display:flex; align-items:center; gap:10px; margin:18px 0 14px;
@@ -463,6 +543,84 @@ body {
     <span class="tag tag-w">🤖 AI提案</span>
     <span class="tag tag-b">📍 現在地 or 地図指定</span>
     <span class="tag tag-r">🚫 私有地を除外</span>
+  </div>
+</div>
+
+<!-- ===== カード4: 飲食店検索 ===== -->
+<div class="card">
+  <span class="card-icon">🍜</span>
+  <h2>周辺の<span class="red">コスパ飲食店</span>を<br>さがす</h2>
+  <p class="sub">地元民が普段使いする個人経営の名店を厳選。<br>チェーン店除外・1000円前後・本日営業中の店のみ。</p>
+  <div class="food-now-badge" id="foodNowBadge">🕐 現在時刻を読み込み中…</div>
+  <div id="foodLocTabs">
+    <button class="food-loc-tab active" id="foodTabGps" onclick="foodSetLocMode('gps')">📍 現在地を使う</button>
+    <button class="food-loc-tab" id="foodTabText" onclick="foodSetLocMode('text')">✏️ 地域を入力する</button>
+  </div>
+  <div id="foodGpsRow">
+    <div class="food-led yellow" id="foodLed"></div>
+    <div id="foodLocLabel">現在地を取得中…</div>
+    <button id="foodLocRetryBtn" onclick="foodGetLocation()">再取得</button>
+  </div>
+  <div class="row" id="foodTextRow" style="display:none;">
+    <span class="row-label">📍 地域</span>
+    <input type="text" id="foodRegion" class="inp inp-food" placeholder="例：海陽町・徳島県南部">
+  </div>
+  <div class="row">
+    <span class="row-label">🍽️ ジャンル</span>
+    <input type="text" id="foodGenre" class="inp inp-food" placeholder="例：ラーメン・定食（空欄＝なんでもOK）">
+  </div>
+  <p class="hint-txt">現在開店中 or 本日中に開く（今日が定休日でない）店のみ表示させます</p>
+  <button class="btn btn-food" onclick="openFood()">🍽️ コスパ飲食店を探す</button>
+  <button class="btn-sub btn-sub-food" onclick="doCopy('food')">📋 プロンプトだけコピー</button>
+  <div class="copied copied-food" id="c-food">✅ コピーしました！</div>
+  <div class="tags">
+    <span class="tag tag-f">🚫 チェーン店除外</span>
+    <span class="tag tag-f">💴 1000円前後</span>
+    <span class="tag tag-f">🅿️ 駐車場情報あり</span>
+    <span class="tag tag-f">⏰ 本日営業中のみ</span>
+  </div>
+</div>
+
+<!-- ===== カード5: 食材店検索 ===== -->
+<div class="card">
+  <span class="card-icon">🥦</span>
+  <h2>周辺の<span class="teal">安い食材店</span>を<br>さがす</h2>
+  <p class="sub">八百屋・精肉店・鮮魚店・直売所を用途別に提案。<br>個人商店・市場・直売所を優先。本日営業中のみ。</p>
+
+  <div class="groc-now-badge" id="grocNowBadge">🕐 現在時刻を読み込み中…</div>
+
+  <!-- 起点モード -->
+  <div id="grocLocTabs">
+    <button class="groc-loc-tab active" id="grocTabGps" onclick="grocSetLocMode('gps')">📍 現在地を使う</button>
+    <button class="groc-loc-tab" id="grocTabText" onclick="grocSetLocMode('text')">✏️ 地域を入力する</button>
+  </div>
+
+  <!-- GPS行 -->
+  <div id="grocGpsRow">
+    <div class="groc-led yellow" id="grocLed"></div>
+    <div id="grocLocLabel">現在地を取得中…</div>
+    <button id="grocLocRetryBtn" onclick="grocGetLocation()">再取得</button>
+  </div>
+
+  <!-- テキスト入力行 -->
+  <div class="row" id="grocTextRow" style="display:none;">
+    <span class="row-label">📍 地域</span>
+    <input type="text" id="grocRegion" class="inp inp-groc" placeholder="例：海陽町・徳島県南部">
+  </div>
+
+  <!-- 品目チップ -->
+  <div class="groc-type-chips" id="grocTypeChips"></div>
+
+  <p class="hint-txt">現在開店中 or 本日中に開く（今日が定休日でない）店のみ表示させます</p>
+
+  <button class="btn btn-groc" onclick="openGroc()">🛒 食材店を探す</button>
+  <button class="btn-sub btn-sub-groc" onclick="doCopy('groc')">📋 プロンプトだけコピー</button>
+  <div class="copied copied-groc" id="c-groc">✅ コピーしました！</div>
+  <div class="tags">
+    <span class="tag tag-groc">🏪 個人商店・直売所優先</span>
+    <span class="tag tag-groc">💴 価格重視</span>
+    <span class="tag tag-groc">🥕 用途別に提案</span>
+    <span class="tag tag-groc">⏰ 本日営業中のみ</span>
   </div>
 </div>
 
@@ -933,6 +1091,248 @@ function osmRenderResults(elements,oLat,oLng){
   });
   html+='</div>';
   res.innerHTML=html;
+}
+
+// ──────────────────────────────────────────
+// 飲食店検索
+// ──────────────────────────────────────────
+(function(){
+  const el = document.getElementById('foodNowBadge');
+  const now = new Date();
+  const days = ['日','月','火','水','木','金','土'];
+  const h = now.getHours(), m = String(now.getMinutes()).padStart(2,'0');
+  el.textContent = `🕐 現在：${now.getMonth()+1}/${now.getDate()}（${days[now.getDay()]}）${h}:${m}`;
+})();
+
+let foodGLat = null, foodGLng = null, foodLocMode = 'gps';
+
+function foodSetLocMode(mode) {
+  foodLocMode = mode;
+  document.getElementById('foodTabGps').classList.toggle('active', mode === 'gps');
+  document.getElementById('foodTabText').classList.toggle('active', mode === 'text');
+  document.getElementById('foodGpsRow').style.display = mode === 'gps' ? 'flex' : 'none';
+  document.getElementById('foodTextRow').style.display = mode === 'text' ? '' : 'none';
+}
+
+function foodGetLocation() {
+  const led = document.getElementById('foodLed');
+  const label = document.getElementById('foodLocLabel');
+  const btn = document.getElementById('foodLocRetryBtn');
+  led.className = 'food-led yellow';
+  label.textContent = '現在地を取得中…';
+  if (!navigator.geolocation) {
+    led.className = 'food-led red';
+    label.textContent = 'このブラウザでは位置情報が使えません';
+    btn.style.display = 'inline-block';
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(pos => {
+    foodGLat = pos.coords.latitude;
+    foodGLng = pos.coords.longitude;
+    led.className = 'food-led green';
+    label.textContent = `現在地を取得しました（${foodGLat.toFixed(4)}, ${foodGLng.toFixed(4)}）`;
+    btn.style.display = 'inline-block';
+  }, err => {
+    led.className = 'food-led red';
+    label.textContent = '取得失敗: ' + err.message;
+    btn.style.display = 'inline-block';
+  }, {enableHighAccuracy:true, timeout:12000});
+}
+foodGetLocation();
+
+function buildFoodPrompt() {
+  const now = new Date();
+  const days = ['日曜','月曜','火曜','水曜','木曜','金曜','土曜'];
+  const h = now.getHours(), m = String(now.getMinutes()).padStart(2,'0');
+  const nowStr = `${now.getMonth()+1}月${now.getDate()}日（${days[now.getDay()]}）${h}:${m}現在`;
+  let location = '';
+  if (foodLocMode === 'gps' && foodGLat) {
+    location = `緯度${foodGLat.toFixed(5)}・経度${foodGLng.toFixed(5)}の周辺（現在地）`;
+  } else {
+    const region = document.getElementById('foodRegion').value.trim();
+    location = region ? region + '周辺' : '現在地周辺';
+  }
+  const genre = document.getElementById('foodGenre').value.trim();
+  const genreStr = genre ? `\n・ジャンル限定：${genre}` : '';
+
+  return `${nowStr}、${location}で、地元の人が普段使いしているコスパ最強の個人経営の飲食店を探してください。
+
+【絶対条件】
+・現在開店中、または本日（${days[now.getDay()]}）が定休日ではなく今日中に開く予定の店のみ
+・現在時刻（${h}:${m}）以降にまだ閉店していない店のみ（すでに閉店した店は除外）
+・チェーン店・フランチャイズは除外${genreStr}
+
+【選定基準】
+・予算：1000円前後（ランチ〜1000円、夜でも1500円以下）
+・味とボリュームの評価が高い
+・観光客向けではなく地元民に愛されている店
+・一人でも入りやすい雰囲気
+・駐車場の有無を必ず記載（車移動のため重要）
+
+【出力フォーマット】
+「ここを選べば間違いない順」で上位5〜8店を出してください。
+各店について以下を記載：
+・店名・ジャンル・おすすめメニュー（価格）
+・営業時間・定休日・本日の営業状況
+・駐車場：あり／なし／近隣あり
+・地元民からの評価（味・量・コスパ）
+・低評価レビューの内容と総合判断
+
+低評価レビューも分析して弱点が少ない店を優先してください。
+GoogleマップやTabelogなどのURLも可能な範囲で添付してください。`;
+}
+
+function openFood() {
+  window.open(`https://claude.ai/new?q=${encodeURIComponent(buildFoodPrompt())}`, '_blank');
+}
+
+// doCopy に food タイプを追加
+const _origDoCopy = doCopy;
+function doCopy(type) {
+  if (type === 'food') {
+    navigator.clipboard.writeText(buildFoodPrompt()).then(() => {
+      const el = document.getElementById('c-food');
+      el.classList.add('show');
+      setTimeout(() => el.classList.remove('show'), 2500);
+    });
+  } else if (type === 'groc') {
+    navigator.clipboard.writeText(buildGrocPrompt()).then(() => {
+      const el = document.getElementById('c-groc');
+      el.classList.add('show');
+      setTimeout(() => el.classList.remove('show'), 2500);
+    });
+  } else {
+    _origDoCopy(type);
+  }
+}
+
+// ──────────────────────────────────────────
+// 食材店検索
+// ──────────────────────────────────────────
+(function(){
+  const el = document.getElementById('grocNowBadge');
+  const now = new Date();
+  const days = ['日','月','火','水','木','金','土'];
+  const h = now.getHours(), m = String(now.getMinutes()).padStart(2,'0');
+  el.textContent = `🕐 現在：${now.getMonth()+1}/${now.getDate()}（${days[now.getDay()]}）${h}:${m}`;
+})();
+
+const GROC_TYPES = [
+  { id:'veg',  label:'🥬 野菜・果物', hint:'八百屋・青果店・直売所' },
+  { id:'meat', label:'🥩 精肉',       hint:'精肉店・肉屋' },
+  { id:'fish', label:'🐟 鮮魚',       hint:'鮮魚店・魚屋' },
+  { id:'rice', label:'🌾 米・穀物',   hint:'米穀店・農産直売' },
+  { id:'all',  label:'🛒 なんでも',   hint:'' },
+];
+let grocSelected = new Set(['all']);
+
+(function initGrocChips(){
+  const wrap = document.getElementById('grocTypeChips');
+  GROC_TYPES.forEach(t => {
+    const b = document.createElement('button');
+    b.className = 'groc-chip' + (t.id === 'all' ? ' active' : '');
+    b.textContent = t.label;
+    b.dataset.id = t.id;
+    b.onclick = () => {
+      if (t.id === 'all') {
+        grocSelected = new Set(['all']);
+        wrap.querySelectorAll('.groc-chip').forEach(x => x.classList.toggle('active', x.dataset.id === 'all'));
+      } else {
+        grocSelected.delete('all');
+        if (grocSelected.has(t.id)) { grocSelected.delete(t.id); b.classList.remove('active'); }
+        else { grocSelected.add(t.id); b.classList.add('active'); }
+        if (grocSelected.size === 0) { grocSelected.add('all'); }
+        wrap.querySelectorAll('.groc-chip').forEach(x => x.classList.toggle('active', grocSelected.has(x.dataset.id)));
+      }
+    };
+    wrap.appendChild(b);
+  });
+})();
+
+let grocGLat = null, grocGLng = null, grocLocMode = 'gps';
+
+function grocSetLocMode(mode) {
+  grocLocMode = mode;
+  document.getElementById('grocTabGps').classList.toggle('active', mode === 'gps');
+  document.getElementById('grocTabText').classList.toggle('active', mode === 'text');
+  document.getElementById('grocGpsRow').style.display = mode === 'gps' ? 'flex' : 'none';
+  document.getElementById('grocTextRow').style.display = mode === 'text' ? '' : 'none';
+}
+
+function grocGetLocation() {
+  const led = document.getElementById('grocLed');
+  const label = document.getElementById('grocLocLabel');
+  const btn = document.getElementById('grocLocRetryBtn');
+  led.className = 'groc-led yellow';
+  label.textContent = '現在地を取得中…';
+  if (!navigator.geolocation) {
+    led.className = 'groc-led red';
+    label.textContent = 'このブラウザでは位置情報が使えません';
+    btn.style.display = 'inline-block';
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(pos => {
+    grocGLat = pos.coords.latitude;
+    grocGLng = pos.coords.longitude;
+    led.className = 'groc-led green';
+    label.textContent = `現在地を取得しました（${grocGLat.toFixed(4)}, ${grocGLng.toFixed(4)}）`;
+    btn.style.display = 'inline-block';
+  }, err => {
+    led.className = 'groc-led red';
+    label.textContent = '取得失敗: ' + err.message;
+    btn.style.display = 'inline-block';
+  }, {enableHighAccuracy:true, timeout:12000});
+}
+grocGetLocation();
+
+function buildGrocPrompt() {
+  const now = new Date();
+  const days = ['日曜','月曜','火曜','水曜','木曜','金曜','土曜'];
+  const h = now.getHours(), m = String(now.getMinutes()).padStart(2,'0');
+  const nowStr = `${now.getMonth()+1}月${now.getDate()}日（${days[now.getDay()]}）${h}:${m}現在`;
+
+  let location = '';
+  if (grocLocMode === 'gps' && grocGLat) {
+    location = `緯度${grocGLat.toFixed(5)}・経度${grocGLng.toFixed(5)}の周辺（現在地）`;
+  } else {
+    const region = document.getElementById('grocRegion').value.trim();
+    location = region ? region + '周辺' : '現在地周辺';
+  }
+
+  const typeLabels = [...grocSelected].map(id => {
+    const t = GROC_TYPES.find(x => x.id === id);
+    return t ? t.hint || t.label : '';
+  }).filter(Boolean).join('・');
+
+  const typeStr = grocSelected.has('all')
+    ? '八百屋・果物店・精肉店・鮮魚店・米穀店など食材を扱う全般'
+    : typeLabels;
+
+  return `${nowStr}、${location}で、今日の食材を安く買うのに最適な地元向けの食材店を教えてください。
+対象：${typeStr}
+
+【絶対条件】
+・現在開店中、または本日（${days[now.getDay()]}）が定休日ではなく今日中に開く予定の店のみ
+・現在時刻（${h}:${m}）以降にまだ閉店していない店のみ（すでに閉店した店は除外）
+・個人商店・市場・農産直売所を優先すること
+・チェーンスーパーは本当に安い・品質が高い場合のみ紹介（その場合は理由を明記）
+
+【選定・出力のルール】
+・価格重視で比較し、**用途別に整理**して提案してください
+　例）「野菜を買うならここ」「肉を買うならここ」「鮮魚ならここ」
+・各店について以下を記載：
+　- 店名・取り扱い品目
+　- 営業時間・定休日・本日の営業状況
+　- 価格帯・他店との比較ポイント（何が安い・何が新鮮か）
+　- 駐車場の有無（車で行くため重要）
+　- 地元客からの評判
+
+・同じ用途で複数候補がある場合は「イチ押し」を1店選び、その理由を書いてください
+・GoogleマップのURLも可能な範囲で添付してください`;
+}
+
+function openGroc() {
+  window.open(`https://claude.ai/new?q=${encodeURIComponent(buildGrocPrompt())}`, '_blank');
 }
 </script>
 </body>
