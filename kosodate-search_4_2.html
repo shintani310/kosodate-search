@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="こども外出ランチャー">
+<title>こども外出ランチャー</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;700;900&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+/* ===== GLOBAL ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --sky-top: #a8dcff;
+  --sky-mid: #d4eeff;
+  --grass-light: #c8f0d8;
+  --grass: #3ab36a;
+  --grass-dark: #2a8a50;
+  --sun: #f7c948;
+  --event: #e05c2a;
+  --event-dark: #b8421a;
+  --camp: #5c8a3c;
+  --camp-dark: #3d6128;
+  --camp-warm: #c07830;
+  --text: #1a2e1a;
+  --sans: 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif;
+  /* OSM panel vars */
+  --bg: #f5f0e8; --bg2: #ede7d9; --surface: #faf7f2;
+  --border: #d4c9b0; --border2: #c2b49a;
+  --text2: #7a6a56; --text3: #a89880;
+  --red: #b84a2a; --green2: #3d7a50;
+}
+html, body { min-height: 100vh; }
+body {
+  background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-mid) 40%, var(--grass-light) 70%, #8dd4a0 100%);
+  font-family: var(--sans);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: hidden;
+  position: relative;
+  padding: 40px 16px 110px;
+}
+
+/* ===== CLOUDS & SUN ===== */
+.cloud { position: fixed; background: white; border-radius: 50px; opacity: 0.8; pointer-events: none; }
+.cloud::before, .cloud::after { content: ''; position: absolute; background: white; border-radius: 50%; }
+.c1 { width: 120px; height: 36px; top: 4%; left: 5%; animation: drift 18s linear infinite; }
+.c1::before { width: 60px; height: 60px; top: -30px; left: 15px; }
+.c1::after { width: 40px; height: 40px; top: -20px; left: 55px; }
+.c2 { width: 90px; height: 28px; top: 10%; right: 6%; animation: drift 24s linear infinite reverse; opacity: 0.65; }
+.c2::before { width: 44px; height: 44px; top: -22px; left: 10px; }
+.c2::after { width: 32px; height: 32px; top: -15px; left: 44px; }
+.c3 { width: 70px; height: 22px; top: 20%; left: 38%; animation: drift 20s linear infinite 6s; opacity: 0.55; }
+.c3::before { width: 34px; height: 34px; top: -16px; left: 8px; }
+.c3::after { width: 24px; height: 24px; top: -12px; left: 36px; }
+@keyframes drift { 0%{transform:translateX(-20px)} 50%{transform:translateX(20px)} 100%{transform:translateX(-20px)} }
+.sun {
+  position: fixed; top: 4%; right: 12%; width: 56px; height: 56px;
+  background: var(--sun); border-radius: 50%; pointer-events: none;
+  box-shadow: 0 0 0 10px rgba(247,201,72,.25), 0 0 0 22px rgba(247,201,72,.12);
+  animation: spulse 4s ease-in-out infinite; z-index: 0;
+}
+@keyframes spulse {
+  0%,100%{box-shadow:0 0 0 10px rgba(247,201,72,.25),0 0 0 22px rgba(247,201,72,.12)}
+  50%{box-shadow:0 0 0 15px rgba(247,201,72,.3),0 0 0 30px rgba(247,201,72,.15)}
+}
+
+/* ===== TREES ===== */
+.tree { position: fixed; bottom: 0; pointer-events: none; z-index: 0; }
+.tree-left { left: 2%; }
+.tree-right { right: 3%; }
+.ground {
+  position: fixed; bottom: 0; left: 0; right: 0; height: 80px;
+  background: linear-gradient(180deg, #6dbb88 0%, #4a9a68 100%);
+  border-radius: 50% 50% 0 0 / 30px 30px 0 0;
+  pointer-events: none; z-index: 0;
+}
+
+/* ===== CARDS ===== */
+.card {
+  position: relative; z-index: 10;
+  background: rgba(255,255,255,.9);
+  backdrop-filter: blur(12px);
+  border-radius: 28px;
+  padding: 32px 28px 28px;
+  width: 100%; max-width: 440px;
+  text-align: center;
+  box-shadow: 0 8px 40px rgba(0,80,30,.13), 0 2px 8px rgba(0,0,0,.07);
+}
+.card + .card { margin-top: 20px; }
+
+.card-icon { font-size: 42px; margin-bottom: 6px; display: block; }
+.card h2 { font-size: 1.45rem; font-weight: 900; color: var(--text); line-height: 1.25; margin-bottom: 5px; letter-spacing: -0.02em; }
+.card h2 .green  { color: var(--grass-dark); }
+.card h2 .orange { color: var(--event); }
+.card h2 .brown  { color: var(--camp-warm); }
+.card .sub { font-family: 'Noto Sans JP', sans-serif; font-size: 0.79rem; color: #5a7a5a; font-weight: 300; margin-bottom: 22px; line-height: 1.65; }
+
+/* ===== BUTTONS ===== */
+.btn {
+  display: block; width: 100%; padding: 15px 20px;
+  color: white; font-family: var(--sans); font-size: 1rem; font-weight: 700;
+  border: none; border-radius: 14px; cursor: pointer; text-decoration: none;
+  transition: all 0.2s ease; position: relative; overflow: hidden; letter-spacing: 0.02em;
+}
+.btn::after { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(255,255,255,.15) 0%,transparent 60%); border-radius:inherit; }
+.btn:hover { transform: translateY(-2px); }
+.btn-green { background: linear-gradient(135deg, var(--grass), var(--grass-dark)); box-shadow: 0 4px 16px rgba(42,138,80,.35); }
+.btn-green:hover { box-shadow: 0 8px 24px rgba(42,138,80,.45); }
+.btn-orange { background: linear-gradient(135deg, var(--event), var(--event-dark)); box-shadow: 0 4px 16px rgba(224,92,42,.35); }
+.btn-orange:hover { box-shadow: 0 8px 24px rgba(224,92,42,.45); }
+.btn-brown { background: linear-gradient(135deg, var(--camp), var(--camp-dark)); box-shadow: 0 4px 16px rgba(92,138,60,.35); }
+.btn-brown:hover { box-shadow: 0 8px 24px rgba(92,138,60,.45); }
+.btn-warm { background: linear-gradient(135deg, var(--camp-warm), #9a5c1a); box-shadow: 0 4px 16px rgba(192,120,48,.35); }
+.btn-warm:hover { box-shadow: 0 8px 24px rgba(192,120,48,.45); }
+
+.btn-sub {
+  display: block; width: 100%; margin-top: 10px; padding: 11px 20px;
+  background: transparent; font-family: var(--sans); font-size: 0.83rem;
+  font-weight: 700; border-radius: 10px; cursor: pointer; transition: all .2s;
+}
+.btn-sub-green  { color:#4a7a5a; border:2px solid rgba(58,179,106,.35); }
+.btn-sub-green:hover  { background:rgba(58,179,106,.08); border-color:var(--grass); }
+.btn-sub-orange { color:#8a4a2a; border:2px solid rgba(224,92,42,.3); }
+.btn-sub-orange:hover { background:rgba(224,92,42,.07); border-color:var(--event); }
+.btn-sub-brown  { color:#3d5a2a; border:2px solid rgba(92,138,60,.3); }
+.btn-sub-brown:hover  { background:rgba(92,138,60,.07); border-color:var(--camp); }
+
+/* ===== COPIED MSG ===== */
+.copied { display:none; margin-top:8px; font-size:.75rem; font-weight:700; }
+.copied.show { display:block; animation:fadeIn .3s ease; }
+.copied-green  { color:var(--grass-dark); }
+.copied-orange { color:var(--event); }
+.copied-brown  { color:var(--camp); }
+@keyframes fadeIn { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:translateY(0)} }
+
+/* ===== INPUT ROWS ===== */
+.row { display:flex; gap:8px; align-items:center; margin-bottom:10px; }
+.row-label { font-size:.78rem; font-weight:700; color:#5a5a5a; white-space:nowrap; font-family:'Noto Sans JP',sans-serif; }
+.inp {
+  flex:1; padding:9px 12px; border-radius:10px;
+  font-family:var(--sans); font-size:.88rem; font-weight:700; color:var(--text);
+  transition:border-color .2s; outline:none;
+}
+.inp-orange { border:2px solid rgba(224,92,42,.3); background:rgba(255,240,230,.4); }
+.inp-orange:focus { border-color:var(--event); }
+.inp-brown  { border:2px solid rgba(92,138,60,.3); background:rgba(240,248,235,.4); }
+.inp-brown:focus  { border-color:var(--camp); }
+.sep { font-size:.85rem; color:#888; font-weight:700; }
+.hint-txt { font-family:'Noto Sans JP',sans-serif; font-size:.69rem; color:#8a6a5a; margin-bottom:14px; text-align:left; line-height:1.5; }
+
+/* ===== TAGS ===== */
+.tags { display:flex; gap:5px; flex-wrap:wrap; justify-content:center; margin-top:18px; }
+.tag { font-family:'Noto Sans JP',sans-serif; font-size:.67rem; padding:3px 9px; border-radius:20px; }
+.tag-g { background:rgba(58,179,106,.1); color:var(--grass-dark); border:1px solid rgba(58,179,106,.25); }
+.tag-o { background:rgba(224,92,42,.1); color:var(--event-dark); border:1px solid rgba(224,92,42,.2); }
+.tag-b { background:rgba(92,138,60,.1); color:var(--camp-dark); border:1px solid rgba(92,138,60,.25); }
+.tag-r { background:rgba(200,50,50,.08); color:#9a2020; border:1px solid rgba(200,50,50,.2); }
+.tag-w { background:rgba(192,120,48,.1); color:#7a4a10; border:1px solid rgba(192,120,48,.25); }
+
+/* ===== DIVIDER ===== */
+.divider {
+  display:flex; align-items:center; gap:10px; margin:18px 0 14px;
+  font-size:.75rem; font-weight:700; color:#8a8a8a;
+}
+.divider::before, .divider::after { content:''; flex:1; height:1px; background:rgba(0,0,0,.1); }
+
+/* ===== CAMP MODE TOGGLE ===== */
+.mode-tabs { display:flex; gap:6px; margin-bottom:16px; }
+.mode-tab {
+  flex:1; padding:10px 8px; border-radius:10px; cursor:pointer;
+  font-family:var(--sans); font-size:.85rem; font-weight:700;
+  border:2px solid rgba(92,138,60,.25); background:transparent; color:#5a7a4a;
+  transition:all .2s;
+}
+.mode-tab.active-osm { background:var(--camp); border-color:var(--camp); color:#fff; }
+.mode-tab.active-ai  { background:var(--camp-warm); border-color:var(--camp-warm); color:#fff; }
+
+/* ===== OSM PANEL ===== */
+#osmPanel {
+  text-align:left;
+  border:1px solid rgba(92,138,60,.2);
+  border-radius:16px; padding:14px;
+  background:rgba(245,240,232,.5);
+  margin-bottom:4px;
+}
+
+/* loc card */
+.loc-card {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:8px; padding:10px 12px; margin-bottom:10px;
+  display:flex; align-items:center; gap:8px;
+}
+.led { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.led.green  { background:var(--green2); box-shadow:0 0 6px var(--green2); animation:blink 3s ease-in-out infinite; }
+.led.yellow { background:var(--camp-warm); animation:blink .8s ease-in-out infinite; }
+.led.red    { background:var(--red); }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+.loc-label { font-size:12px; color:var(--text2); flex:1; font-family:'Noto Sans JP',sans-serif; }
+.mini-btn {
+  flex-shrink:0; font-size:10px; font-family:var(--sans);
+  background:transparent; border:1px solid var(--border2);
+  border-radius:5px; color:var(--text2); padding:3px 8px; cursor:pointer;
+}
+.mini-btn:hover { background:var(--bg2); }
+
+/* ctrl block */
+.ctrl-block {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:8px; padding:8px 12px; margin-bottom:8px;
+  display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+}
+.ctrl-label { font-size:10px; color:var(--text3); white-space:nowrap; letter-spacing:.06em; min-width:40px; font-family:'Noto Sans JP',sans-serif; }
+.chips { display:flex; gap:4px; flex-wrap:wrap; }
+.chip {
+  font-family:var(--sans); font-size:11px;
+  background:transparent; border:1px solid var(--border);
+  border-radius:20px; color:var(--text2); padding:4px 10px;
+  cursor:pointer; transition:all .12s; white-space:nowrap;
+}
+.chip.active { background:var(--camp); border-color:var(--camp); color:#fff; }
+.chip:hover:not(.active) { border-color:var(--border2); color:var(--text); }
+
+/* origin mode toggle */
+.origin-chips { display:flex; gap:6px; margin-bottom:8px; }
+.origin-chip {
+  flex:1; padding:8px; border-radius:8px; cursor:pointer; text-align:center;
+  font-family:var(--sans); font-size:11px; font-weight:700;
+  border:1px solid var(--border); background:transparent; color:var(--text2);
+  transition:all .15s;
+}
+.origin-chip.active { background:var(--camp-warm); border-color:var(--camp-warm); color:#fff; }
+
+/* early map */
+#osmEarlyMapWrap {
+  display:none; border-radius:8px; overflow:hidden;
+  border:1px solid var(--border); margin-bottom:8px;
+}
+#osmEarlyMap { height:220px; width:100%; }
+
+/* scan btn */
+.scan-btn {
+  width:100%; background:var(--camp); border:none; border-radius:8px;
+  color:#fff; font-family:var(--sans); font-size:14px; font-weight:700;
+  padding:12px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;
+  transition:all .15s; letter-spacing:.04em; -webkit-appearance:none;
+}
+.scan-btn:hover:not(:disabled) { background:var(--camp-dark); }
+.scan-btn:disabled { background:var(--border); color:var(--text3); cursor:default; }
+@keyframes spin { to{transform:rotate(360deg)} }
+.spinner { width:14px; height:14px; border:2px solid rgba(255,255,255,.4); border-top-color:#fff; border-radius:50%; animation:spin .8s linear infinite; }
+
+/* result map */
+#osmResultMapWrap { display:none; border-radius:8px; overflow:hidden; border:1px solid var(--border); margin-top:10px; margin-bottom:10px; }
+#osmResultMap { height:240px; width:100%; }
+
+/* spot cards */
+@keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+.spot-list { display:flex; flex-direction:column; gap:6px; margin-top:8px; }
+.spot-card {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:8px; padding:10px 12px; cursor:pointer; transition:all .15s;
+  animation:fadeUp .3s ease both;
+}
+.spot-card:hover { border-color:var(--border2); box-shadow:0 2px 8px rgba(0,0,0,.06); }
+.spot-card.active { border-color:var(--camp); box-shadow:0 0 0 2px rgba(92,138,60,.2); }
+.spot-top { display:flex; align-items:flex-start; gap:8px; }
+.spot-num { font-size:11px; color:var(--text3); flex-shrink:0; width:18px; padding-top:2px; font-weight:700; }
+.spot-num.top { color:var(--camp-warm); }
+.spot-body { flex:1; min-width:0; }
+.spot-name { font-size:13px; font-weight:700; color:var(--text); line-height:1.3; }
+.tag-row { display:flex; flex-wrap:wrap; gap:3px; margin-top:5px; }
+.stag { font-size:9px; padding:2px 6px; border-radius:3px; border:1px solid; letter-spacing:.02em; font-family:'Noto Sans JP',sans-serif; }
+.stag-type { color:var(--camp-dark); border-color:rgba(92,138,60,.3); background:rgba(92,138,60,.07); }
+.stag-size { color:var(--camp-warm); border-color:rgba(192,120,48,.3); background:rgba(192,120,48,.07); }
+.stag-ok   { color:var(--green2); border-color:rgba(61,122,80,.3); background:rgba(61,122,80,.07); }
+.stag-warn { color:var(--red); border-color:rgba(184,74,42,.3); background:rgba(184,74,42,.07); }
+.spot-meta { display:flex; gap:10px; margin-top:5px; flex-wrap:wrap; }
+.meta-item { font-size:10px; color:var(--text3); font-family:'Noto Sans JP',sans-serif; }
+.meta-item b { color:var(--text2); font-weight:500; }
+.score-row { display:flex; align-items:center; gap:5px; margin-top:6px; }
+.score-label { font-size:9px; color:var(--text3); width:28px; font-family:'Noto Sans JP',sans-serif; }
+.score-bg { flex:1; height:3px; background:var(--bg2); border-radius:2px; }
+.score-fill { height:100%; border-radius:2px; background:linear-gradient(90deg,var(--camp),var(--camp-warm)); }
+.score-val { font-size:9px; color:var(--text3); width:18px; text-align:right; }
+.spot-actions { display:flex; gap:5px; margin-top:8px; padding-top:8px; border-top:1px solid var(--border); }
+.act-btn {
+  font-family:var(--sans); font-size:10px; padding:4px 9px; border-radius:5px;
+  border:1px solid var(--border); background:transparent; color:var(--text2);
+  cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; gap:3px; transition:all .12s;
+}
+.act-btn:hover { background:var(--bg2); border-color:var(--border2); }
+.act-btn.primary { background:var(--camp); border-color:var(--camp); color:#fff; }
+.act-btn.primary:hover { background:var(--camp-dark); }
+.empty-osm { text-align:center; padding:24px 12px; color:var(--text3); font-size:12px; font-family:'Noto Sans JP',sans-serif; }
+.empty-osm-icon { font-size:28px; margin-bottom:8px; }
+.error-osm { background:rgba(184,74,42,.06); border:1px solid rgba(184,74,42,.25); border-radius:8px; padding:12px; font-size:11px; color:var(--red); font-family:'Noto Sans JP',sans-serif; }
+.scan-hint { font-size:10px; color:var(--text3); margin-top:6px; padding:6px 10px; border-left:2px solid var(--border); line-height:1.6; font-family:'Noto Sans JP',sans-serif; }
+.result-header { display:flex; align-items:center; justify-content:space-between; margin-top:10px; margin-bottom:6px; }
+.result-title { font-size:12px; font-weight:700; color:var(--text2); font-family:'Noto Sans JP',sans-serif; }
+.result-count { font-size:11px; color:var(--text3); font-family:'Noto Sans JP',sans-serif; }
+
+/* ===== AI PANEL ===== */
+#aiPanel { text-align:left; }
+
+/* Leaflet popup */
+.leaflet-popup-content-wrapper { border-radius:8px!important; font-family:var(--sans)!important; }
+.leaflet-popup-content { font-size:11px!important; line-height:1.5!important; }
+.popup-name { font-weight:700; font-size:12px; margin-bottom:3px; color:#3d3228; }
+.popup-type { font-size:10px; color:#7a6a56; }
+.popup-dist { font-size:10px; color:#3d6128; margin-top:2px; font-weight:500; }
+</style>
+</head>
+<body>
+
+<!-- デコ -->
+<div class="cloud c1"></div>
+<div class="cloud c2"></div>
+<div class="cloud c3"></div>
+<div class="sun"></div>
+<div class="tree tree-left">
+  <svg width="56" height="130" viewBox="0 0 56 130">
+    <rect x="23" y="85" width="10" height="45" fill="#7a4f2e"/>
+    <ellipse cx="28" cy="66" rx="20" ry="26" fill="#3ab36a"/>
+    <ellipse cx="28" cy="48" rx="15" ry="20" fill="#4bc878"/>
+    <ellipse cx="28" cy="32" rx="9" ry="15" fill="#5ed88a"/>
+  </svg>
+</div>
+<div class="tree tree-right">
+  <svg width="46" height="105" viewBox="0 0 46 105">
+    <rect x="19" y="68" width="8" height="37" fill="#7a4f2e"/>
+    <ellipse cx="23" cy="52" rx="17" ry="21" fill="#2ea85c"/>
+    <ellipse cx="23" cy="36" rx="12" ry="17" fill="#3ab36a"/>
+    <ellipse cx="23" cy="23" rx="8" ry="12" fill="#4bc878"/>
+  </svg>
+</div>
+<div class="ground"></div>
+
+<!-- ===== カード1: 施設検索 ===== -->
+<div class="card">
+  <span class="card-icon">🏃‍♂️</span>
+  <h2>周辺の<span class="green">子連れ施設</span>を<br>さがす</h2>
+  <p class="sub">現在地周辺の遊具充実の公園・<br>体を動かせる施設をマップ付きで表示</p>
+  <a id="btnFacility" class="btn btn-green" href="#" target="_blank">🗺️ 今すぐ周辺を検索する</a>
+  <button class="btn-sub btn-sub-green" onclick="doCopy('facility')">📋 プロンプトだけコピー</button>
+  <div class="copied copied-green" id="c-facility">✅ コピーしました！</div>
+  <div class="tags">
+    <span class="tag tag-g">🛝 遊具充実の公園を優先</span>
+    <span class="tag tag-g">🏃 体を動かせる施設</span>
+    <span class="tag tag-g">📍 現在地から検索</span>
+  </div>
+</div>
+
+<!-- ===== カード2: イベント検索 ===== -->
+<div class="card">
+  <span class="card-icon">🎪</span>
+  <h2>地域の<span class="orange">子連れイベント</span>を<br>さがす</h2>
+  <p class="sub">町の公式サイト・地域情報・地元カレンダーを優先。<br>じゃらん・いこーよ等の大手まとめは除外。</p>
+  <div class="row">
+    <span class="row-label">📍 地域</span>
+    <input type="text" id="evRegion" class="inp inp-orange" placeholder="例：海陽町・徳島県南部" value="海陽町・徳島県南部">
+  </div>
+  <div class="row">
+    <span class="row-label">📅 日付</span>
+    <input type="date" id="evFrom" class="inp inp-orange">
+    <span class="sep">〜</span>
+    <input type="date" id="evTo" class="inp inp-orange">
+  </div>
+  <p class="hint-txt">※ 日付を空欄にすると「この週末」で検索します</p>
+  <button class="btn btn-orange" onclick="openEvent()">🔍 地域イベントを検索する</button>
+  <button class="btn-sub btn-sub-orange" onclick="doCopy('event')">📋 プロンプトだけコピー</button>
+  <div class="copied copied-orange" id="c-event">✅ コピーしました！</div>
+  <div class="tags">
+    <span class="tag tag-o">🏛️ 町の公式サイト優先</span>
+    <span class="tag tag-o">📰 地域情報サイト優先</span>
+    <span class="tag tag-r">🚫 大手まとめサイト除外</span>
+  </div>
+</div>
+
+<!-- ===== カード3: 車中泊スポット ===== -->
+<div class="card">
+  <span class="card-icon">🏕️</span>
+  <h2>周辺の<span class="brown">車中泊スポット</span>を<br>さがす</h2>
+  <p class="sub">OSMデータのリアルタイムスキャン、または<br>Claudeへのスポット提案の2通りで探せます</p>
+
+  <!-- モード切替 -->
+  <div class="mode-tabs">
+    <button class="mode-tab active-osm" id="tabOsm" onclick="setCampMode('osm')">🗺️ OSMスキャン</button>
+    <button class="mode-tab" id="tabAi" onclick="setCampMode('ai')">🤖 Claudeに相談</button>
+  </div>
+
+  <!-- ── OSMパネル ── -->
+  <div id="osmPanel">
+    <!-- 現在地 -->
+    <div class="loc-card">
+      <div class="led yellow" id="osmLed"></div>
+      <div class="loc-label" id="osmLocLabel">現在地を取得中…</div>
+      <button class="mini-btn" id="osmLocBtn" style="display:none" onclick="osmGetLocation()">再取得</button>
+    </div>
+
+    <!-- 起点モード -->
+    <div class="origin-chips">
+      <button class="origin-chip active" id="osmModeGps" onclick="osmSetMode('gps')">📍 現在地</button>
+      <button class="origin-chip" id="osmModeMap" onclick="osmSetMode('map')">🗺️ 地図で指定</button>
+    </div>
+    <div id="osmModeHint" style="display:none" class="scan-hint" style="margin-bottom:8px">地図をタップして検索の起点を指定してください</div>
+
+    <!-- 地図指定用マップ -->
+    <div id="osmEarlyMapWrap">
+      <div id="osmEarlyMap"></div>
+    </div>
+
+    <!-- 検索範囲 -->
+    <div class="ctrl-block">
+      <span class="ctrl-label">検索範囲</span>
+      <div class="chips" id="osmRadiusRow"></div>
+    </div>
+
+    <!-- 種別 -->
+    <div class="ctrl-block">
+      <span class="ctrl-label">種別</span>
+      <div class="chips" id="osmCatRow"></div>
+    </div>
+
+    <button class="scan-btn" id="osmScanBtn" disabled onclick="osmDoSearch()">
+      🔍　周辺をスキャン
+    </button>
+
+    <!-- 結果マップ -->
+    <div id="osmResultMapWrap">
+      <div id="osmResultMap"></div>
+    </div>
+
+    <!-- 結果リスト -->
+    <div id="osmResults"></div>
+
+    <p style="font-size:9px;color:var(--text3);text-align:center;margin-top:10px;font-family:'Noto Sans JP',sans-serif;">DATA: © OpenStreetMap contributors · ODbL</p>
+  </div>
+
+  <!-- ── AIパネル ── -->
+  <div id="aiPanel" style="display:none; text-align:left;">
+    <div class="row">
+      <span class="row-label">📍 地域</span>
+      <input type="text" id="campRegion" class="inp inp-brown" placeholder="例：海陽町周辺、徳島県南部" value="海陽町周辺">
+    </div>
+    <div class="row">
+      <span class="row-label">🔍 条件</span>
+      <input type="text" id="campCondition" class="inp inp-brown" placeholder="例：子連れ歓迎、トイレあり、無料" value="子連れ歓迎、トイレあり、無料優先">
+    </div>
+    <p class="hint-txt">Claudeがウェブ検索でスポット情報・口コミを調べて提案します</p>
+    <button class="btn btn-warm" onclick="openCampAi()">🤖 Claudeに車中泊スポットを聞く</button>
+    <button class="btn-sub btn-sub-brown" onclick="doCopy('camp')">📋 プロンプトだけコピー</button>
+    <div class="copied copied-brown" id="c-camp">✅ コピーしました！</div>
+  </div>
+
+  <div class="tags" style="margin-top:16px;">
+    <span class="tag tag-b">🛰️ OSMリアルタイム</span>
+    <span class="tag tag-w">🤖 AI提案</span>
+    <span class="tag tag-b">📍 現在地 or 地図指定</span>
+    <span class="tag tag-r">🚫 私有地を除外</span>
+  </div>
+</div>
+
+<!-- ============================================================
+     JAVASCRIPT
+============================================================ -->
+<script>
+// ──────────────────────────────────────────
+// 施設検索プロンプト
+// ──────────────────────────────────────────
+const FACILITY_PROMPT = `周辺で子連れで遊べる施設を探してください。
+公園は遊具が多い場所を優先して、他にも体を動かせそうな施設（スポーツ施設・体育館・屋内遊び場など）を優先してリストアップしてください。
+マップ表示もしてください。`;
+document.getElementById('btnFacility').href = `https://claude.ai/new?q=${encodeURIComponent(FACILITY_PROMPT)}`;
+
+// ──────────────────────────────────────────
+// イベント検索
+// ──────────────────────────────────────────
+(function(){
+  const today = new Date();
+  const day = today.getDay();
+  const diffToSat = ((6 - day) + 7) % 7 || 7;
+  const sat = new Date(today); sat.setDate(today.getDate() + diffToSat);
+  const sun = new Date(sat); sun.setDate(sat.getDate() + 1);
+  const fmt = d => d.toISOString().split('T')[0];
+  document.getElementById('evFrom').value = fmt(sat);
+  document.getElementById('evTo').value = fmt(sun);
+})();
+
+function buildEventPrompt() {
+  const region = document.getElementById('evRegion').value.trim() || '現在地周辺';
+  const from = document.getElementById('evFrom').value;
+  const to = document.getElementById('evTo').value;
+  let dateStr = 'この週末';
+  if (from && to) dateStr = `${from}〜${to}`;
+  else if (from) dateStr = from;
+  return `${region}で${dateStr}に開催される子連れで楽しめるイベントを探してください。
+
+【検索の優先順位】
+1. 町・市の公式サイト・行政のイベントカレンダー
+2. 地域情報サイト・地元コミュニティサイト
+3. 地元NPO・施設の公式サイト
+
+【除外してほしいサイト】
+- じゃらん・いこーよ・ウォーカープラス・るるぶなどの大手観光まとめサイト
+- 全国チェーンのイベント情報サイト
+
+子どもが体を動かせるものや、地域ならではのものを優先してください。`;
+}
+function openEvent() {
+  window.open(`https://claude.ai/new?q=${encodeURIComponent(buildEventPrompt())}`, '_blank');
+}
+
+// ──────────────────────────────────────────
+// 車中泊AI検索
+// ──────────────────────────────────────────
+function buildCampPrompt() {
+  const region = document.getElementById('campRegion').value.trim() || '現在地周辺';
+  const cond = document.getElementById('campCondition').value.trim();
+  return `${region}の車中泊スポットを探してください。
+${cond ? `\n条件：${cond}\n` : ''}
+以下の情報を含めて教えてください：
+- スポット名と場所（住所・地図リンク）
+- トイレの有無・清潔さ
+- 料金（無料か有料か）
+- 広さ・駐車可能台数の目安
+- 子連れでの注意点・おすすめポイント
+- 口コミ・実際の評判
+
+車中泊に適した駐車場・道の駅・公園・海岸駐車場なども含めて探してください。
+私有地や車中泊が明示的に禁止されている場所は除いてください。`;
+}
+function openCampAi() {
+  window.open(`https://claude.ai/new?q=${encodeURIComponent(buildCampPrompt())}`, '_blank');
+}
+
+// ──────────────────────────────────────────
+// コピー共通
+// ──────────────────────────────────────────
+function doCopy(type) {
+  let text;
+  if (type === 'facility') text = FACILITY_PROMPT;
+  else if (type === 'event') text = buildEventPrompt();
+  else text = buildCampPrompt();
+  navigator.clipboard.writeText(text).then(() => {
+    const el = document.getElementById(`c-${type}`);
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2500);
+  });
+}
+
+// ──────────────────────────────────────────
+// モード切替（OSM / AI）
+// ──────────────────────────────────────────
+function setCampMode(mode) {
+  const tabOsm = document.getElementById('tabOsm');
+  const tabAi  = document.getElementById('tabAi');
+  const panelOsm = document.getElementById('osmPanel');
+  const panelAi  = document.getElementById('aiPanel');
+  if (mode === 'osm') {
+    tabOsm.className = 'mode-tab active-osm';
+    tabAi.className  = 'mode-tab';
+    panelOsm.style.display = 'block';
+    panelAi.style.display  = 'none';
+  } else {
+    tabOsm.className = 'mode-tab';
+    tabAi.className  = 'mode-tab active-ai';
+    panelOsm.style.display = 'none';
+    panelAi.style.display  = 'block';
+  }
+}
+
+// ──────────────────────────────────────────
+// OSM スキャン
+// ──────────────────────────────────────────
+function esc(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+const OSM_RADII = [3, 5, 10, 20];
+const OSM_CATS = [
+  {id:'all',label:'すべて'},
+  {id:'parking',label:'駐車場'},
+  {id:'park',label:'公園'},
+  {id:'rest',label:'休憩所'},
+  {id:'open',label:'広場'},
+];
+
+let osmGLat = null, osmGLng = null;
+let osmRadius = 10;
+let osmCat = 'all';
+let osmMode = 'gps';
+let osmPinLat = null, osmPinLng = null;
+let osmLeaflet = null;
+let osmEarlyLeaflet = null;
+let osmPinMarker = null;
+let osmMarkers = [];
+
+function osmSearchOrigin() {
+  return osmMode === 'map' && osmPinLat !== null ? {lat:osmPinLat,lng:osmPinLng} : {lat:osmGLat,lng:osmGLng};
+}
+
+function osmSetMode(mode) {
+  osmMode = mode;
+  document.getElementById('osmModeGps').classList.toggle('active', mode === 'gps');
+  document.getElementById('osmModeMap').classList.toggle('active', mode === 'map');
+  document.getElementById('osmModeHint').style.display = mode === 'map' ? 'block' : 'none';
+  document.getElementById('osmEarlyMapWrap').style.display = mode === 'map' ? 'block' : 'none';
+  if (mode === 'map') osmInitEarlyMap();
+  else osmUpdateBtn();
+}
+
+function osmUpdateBtn() {
+  const o = osmSearchOrigin();
+  document.getElementById('osmScanBtn').disabled = !o.lat;
+}
+
+function osmInitEarlyMap() {
+  const clat = osmGLat || 33.570;
+  const clng = osmGLng || 134.298;
+  if (osmEarlyLeaflet) { osmEarlyLeaflet.remove(); osmEarlyLeaflet = null; osmPinMarker = null; }
+  osmEarlyLeaflet = L.map('osmEarlyMap').setView([clat, clng], 12);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution:'© OpenStreetMap contributors', maxZoom:19
+  }).addTo(osmEarlyLeaflet);
+  if (osmGLat) {
+    const youIcon = L.divIcon({html:'<div style="width:12px;height:12px;border-radius:50%;background:#5c8a3c;border:2px solid white;box-shadow:0 0 6px rgba(92,138,60,.6)"></div>', iconSize:[12,12],iconAnchor:[6,6],className:''});
+    L.marker([osmGLat, osmGLng], {icon:youIcon}).addTo(osmEarlyLeaflet).bindPopup('<div class="popup-name">📍 現在地</div>');
+  }
+  osmEarlyLeaflet.on('click', e => {
+    osmPinLat = e.latlng.lat;
+    osmPinLng = e.latlng.lng;
+    if (osmPinMarker) osmPinMarker.remove();
+    const pinIcon = L.divIcon({html:'<div style="width:22px;height:22px;border-radius:50%;background:#c07830;border:2.5px solid white;box-shadow:0 2px 8px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;font-size:12px">🎯</div>', iconSize:[22,22],iconAnchor:[11,11],className:''});
+    osmPinMarker = L.marker([osmPinLat,osmPinLng],{icon:pinIcon}).addTo(osmEarlyLeaflet).bindPopup('<div class="popup-name">🎯 検索起点</div>').openPopup();
+    document.getElementById('osmModeHint').textContent = '起点を指定しました。「周辺をスキャン」してください';
+    osmUpdateBtn();
+  });
+}
+
+// コントロール初期化
+(function(){
+  const rr = document.getElementById('osmRadiusRow');
+  OSM_RADII.forEach(r => {
+    const b = document.createElement('button');
+    b.className = 'chip' + (r === 10 ? ' active' : '');
+    b.textContent = r + 'km';
+    b.onclick = () => { osmRadius = r; rr.querySelectorAll('.chip').forEach(x=>x.classList.remove('active')); b.classList.add('active'); };
+    rr.appendChild(b);
+  });
+  const cr = document.getElementById('osmCatRow');
+  OSM_CATS.forEach(c => {
+    const b = document.createElement('button');
+    b.className = 'chip' + (c.id === 'all' ? ' active' : '');
+    b.textContent = c.label;
+    b.onclick = () => { osmCat = c.id; cr.querySelectorAll('.chip').forEach(x=>x.classList.remove('active')); b.classList.add('active'); };
+    cr.appendChild(b);
+  });
+})();
+
+function osmGetLocation() {
+  const led = document.getElementById('osmLed');
+  const label = document.getElementById('osmLocLabel');
+  const btn = document.getElementById('osmLocBtn');
+  led.className = 'led yellow';
+  label.textContent = '現在地を取得中…';
+  document.getElementById('osmScanBtn').disabled = true;
+  if (!navigator.geolocation) {
+    led.className = 'led red';
+    label.textContent = 'このブラウザでは位置情報が使えません';
+    btn.style.display = '';
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(pos => {
+    osmGLat = pos.coords.latitude;
+    osmGLng = pos.coords.longitude;
+    led.className = 'led green';
+    label.textContent = '現在地を取得しました';
+    btn.style.display = '';
+    osmUpdateBtn();
+    if (osmEarlyLeaflet) osmEarlyLeaflet.setView([osmGLat, osmGLng], 12);
+  }, err => {
+    led.className = 'led red';
+    label.textContent = '取得失敗: ' + err.message;
+    btn.style.display = '';
+  }, {enableHighAccuracy:true, timeout:12000});
+}
+osmGetLocation();
+
+function osmDist(lat1,lng1,lat2,lng2) {
+  const R=6371, dLat=(lat2-lat1)*Math.PI/180, dLng=(lng2-lng1)*Math.PI/180;
+  const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+function fmtDist(km){ return km<1 ? Math.round(km*1000)+'m' : km.toFixed(1)+'km'; }
+function fmtArea(m2){ if(!m2) return null; return m2>10000 ? Math.round(m2/10000*10)/10+'ha' : Math.round(m2)+'m²'; }
+function estArea(bounds){
+  if(!bounds) return null;
+  const dlat=(bounds.maxlat-bounds.minlat)*111000;
+  const dlng=(bounds.maxlon-bounds.minlon)*111000*Math.cos(((bounds.maxlat+bounds.minlat)/2)*Math.PI/180);
+  return dlat*dlng;
+}
+function osmCategorize(el){
+  const t=el.tags||{};
+  if(t.highway==='rest_area'||t.highway==='services') return 'rest';
+  if(t.tourism==='camp_site') return 'camp';
+  if(t.leisure==='park'||t.leisure==='garden'||t.leisure==='recreation_ground') return 'park';
+  if(t.landuse==='recreation_ground'||t.landuse==='grass'||t.landuse==='meadow') return 'open';
+  if(t.natural==='beach'||t.natural==='grassland') return 'open';
+  if(t.amenity==='parking'||t.landuse==='parking') return 'parking';
+  if(t.leisure==='sports_centre'||t.leisure==='stadium') return 'park';
+  if(t.tourism==='picnic_site') return 'open';
+  return 'other';
+}
+function osmTypeLabel(el){
+  const t=el.tags||{}, cat=osmCategorize(el);
+  if(t.highway==='rest_area') return '🛑 路傍休憩所';
+  if(t.highway==='services') return '🛣️ SA・サービスエリア';
+  if(t.tourism==='camp_site') return '🏕️ キャンプ場';
+  if(t.amenity==='parking'){
+    if(t.parking==='surface') return '🅿️ 平面駐車場';
+    if(t.parking==='multi-storey') return '🏗️ 立体駐車場';
+    return '🅿️ 駐車場';
+  }
+  if(cat==='park'){ if(t.leisure==='sports_centre') return '⚽ スポーツ施設'; return '🌿 公園'; }
+  if(cat==='open'){
+    if(t.natural==='beach') return '🏖️ 海岸';
+    if(t.landuse==='meadow') return '🌾 草地・広場';
+    if(t.tourism==='picnic_site') return '🧺 ピクニックエリア';
+    return '🌳 広場・空地';
+  }
+  return '📍 その他';
+}
+function osmGetName(el){ const t=el.tags||{}; return t.name||t['name:ja']||t['name:en']||null; }
+function osmScore(el,area){
+  const t=el.tags||{};
+  let s=0, cat=osmCategorize(el);
+  const base={rest:90,camp:85,parking:70,park:55,open:50,other:30};
+  s+=base[cat]||30;
+  if(area){ if(area>50000)s+=30; else if(area>10000)s+=20; else if(area>3000)s+=10; }
+  if(el.type==='way'||el.type==='relation') s+=15;
+  if(t.access==='yes'||t.access==='public') s+=10;
+  if(t.access==='private'||t.access==='no') s-=40;
+  if(t.fee==='no') s+=8;
+  if(t.fee==='yes') s-=5;
+  if(t.name) s+=5;
+  if(t.overnight==='yes'||t.motorhome==='yes') s+=20;
+  if(t.capacity&&parseInt(t.capacity)>20) s+=8;
+  if(t.amenity==='parking'&&(!t.parking||t.parking==='surface')) s+=10;
+  if(t.lit==='yes') s+=3;
+  if(t['no_camping']==='yes'||t['overnight_parking']==='no') s-=30;
+  return Math.max(0,Math.min(100,s));
+}
+function osmBuildQuery(lat,lng,radiusM){
+  const r=radiusM;
+  return `[out:json][timeout:25];
+(
+  node["amenity"="parking"](around:${r},${lat},${lng});
+  way["amenity"="parking"](around:${r},${lat},${lng});
+  node["highway"="rest_area"](around:${r},${lat},${lng});
+  way["highway"="rest_area"](around:${r},${lat},${lng});
+  node["highway"="services"](around:${r},${lat},${lng});
+  way["highway"="services"](around:${r},${lat},${lng});
+  way["leisure"="park"](around:${r},${lat},${lng});
+  way["leisure"="recreation_ground"](around:${r},${lat},${lng});
+  node["tourism"="camp_site"](around:${r},${lat},${lng});
+  way["tourism"="camp_site"](around:${r},${lat},${lng});
+  way["landuse"="meadow"](around:${r},${lat},${lng});
+  way["natural"="beach"](around:${r},${lat},${lng});
+);
+out center bb;`;
+}
+const OVERPASS_ENDPOINTS = [
+  'https://overpass-api.de/api/interpreter',
+  'https://overpass.kumi.systems/api/interpreter',
+  'https://overpass.private.coffee/api/interpreter',
+];
+async function osmFetchOverpass(query){
+  const body='data='+encodeURIComponent(query);
+  for(let i=0;i<OVERPASS_ENDPOINTS.length;i++){
+    try{
+      const resp=await fetch(OVERPASS_ENDPOINTS[i],{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body,signal:AbortSignal.timeout(28000)});
+      if(resp.ok) return await resp.json();
+      if(i===OVERPASS_ENDPOINTS.length-1) throw new Error('HTTP '+resp.status);
+    }catch(e){ if(i===OVERPASS_ENDPOINTS.length-1) throw e; }
+  }
+}
+
+function osmInitResultMap(oLat,oLng){
+  document.getElementById('osmEarlyMapWrap').style.display='none';
+  if(osmEarlyLeaflet){osmEarlyLeaflet.remove();osmEarlyLeaflet=null;osmPinMarker=null;}
+  if(osmLeaflet){osmLeaflet.remove();osmLeaflet=null;}
+  document.getElementById('osmResultMapWrap').style.display='block';
+  osmLeaflet=L.map('osmResultMap').setView([oLat,oLng],13);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors',maxZoom:19}).addTo(osmLeaflet);
+  if(osmMode==='map'){
+    const pinIcon=L.divIcon({html:'<div style="width:20px;height:20px;border-radius:50%;background:#c07830;border:2.5px solid white;box-shadow:0 0 8px rgba(192,120,48,.7);display:flex;align-items:center;justify-content:center;font-size:11px">🎯</div>',iconSize:[20,20],iconAnchor:[10,10],className:''});
+    L.marker([oLat,oLng],{icon:pinIcon}).addTo(osmLeaflet).bindPopup('<div class="popup-name">🎯 検索起点</div>');
+    if(osmGLat){
+      const yIcon=L.divIcon({html:'<div style="width:12px;height:12px;border-radius:50%;background:#5c8a3c;border:2px solid white;box-shadow:0 0 6px rgba(92,138,60,.6)"></div>',iconSize:[12,12],iconAnchor:[6,6],className:''});
+      L.marker([osmGLat,osmGLng],{icon:yIcon}).addTo(osmLeaflet).bindPopup('<div class="popup-name">📍 現在地</div>');
+    }
+  } else {
+    const yIcon=L.divIcon({html:'<div style="width:14px;height:14px;border-radius:50%;background:#5c8a3c;border:2.5px solid white;box-shadow:0 0 8px rgba(92,138,60,.7)"></div>',iconSize:[14,14],iconAnchor:[7,7],className:''});
+    L.marker([oLat,oLng],{icon:yIcon}).addTo(osmLeaflet).bindPopup('<div class="popup-name">📍 現在地</div>');
+  }
+}
+function osmClearMarkers(){osmMarkers.forEach(m=>m.marker.remove());osmMarkers=[];}
+function osmAddSpotMarkers(spots){
+  osmClearMarkers();
+  spots.forEach((sp,i)=>{
+    const color=i<3?'#c07830':'#5c8a3c';
+    const icon=L.divIcon({html:`<div style="width:26px;height:26px;border-radius:50%;background:${color};border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;color:white;font-size:11px;font-weight:700;font-family:sans-serif">${i+1}</div>`,iconSize:[26,26],iconAnchor:[13,13],className:''});
+    const name=osmGetName(sp.el)||osmTypeLabel(sp.el).replace(/^.+? /,'');
+    const marker=L.marker([sp.lat,sp.lng],{icon}).addTo(osmLeaflet).bindPopup(`<div class="popup-name">${esc(name)}</div><div class="popup-type">${esc(osmTypeLabel(sp.el))}</div><div class="popup-dist">📏 ${fmtDist(sp.d)}</div>`);
+    marker.on('click',()=>osmHighlightCard(i));
+    osmMarkers.push({marker});
+  });
+}
+function osmHighlightCard(index){
+  document.querySelectorAll('.spot-card').forEach((c,i)=>c.classList.toggle('active',i===index));
+  const card=document.querySelectorAll('.spot-card')[index];
+  if(card) card.scrollIntoView({behavior:'smooth',block:'nearest'});
+  if(osmMarkers[index]) osmMarkers[index].marker.openPopup();
+}
+
+async function osmDoSearch(){
+  const origin=osmSearchOrigin();
+  if(!origin.lat) return;
+  const btn=document.getElementById('osmScanBtn');
+  const res=document.getElementById('osmResults');
+  btn.disabled=true;
+  btn.innerHTML='<div class="spinner"></div>　スキャン中…';
+  res.innerHTML='';
+  try{
+    const query=osmBuildQuery(origin.lat,origin.lng,osmRadius*1000);
+    const data=await osmFetchOverpass(query);
+    osmRenderResults(data.elements||[],origin.lat,origin.lng);
+  }catch(err){
+    res.innerHTML=`<div class="error-osm">⚠ スキャン失敗: ${esc(err.message)}<br><br>時間をおいて再試行するか、検索範囲を小さくしてください。</div>`;
+  }finally{
+    btn.disabled=false;
+    btn.innerHTML='🔍　周辺をスキャン';
+  }
+}
+
+function osmRenderResults(elements,oLat,oLng){
+  const res=document.getElementById('osmResults');
+  const spots=elements.map(el=>{
+    let lat,lng;
+    if(el.type==='node'){lat=el.lat;lng=el.lon;}
+    else if(el.center){lat=el.center.lat;lng=el.center.lon;}
+    else return null;
+    const area=estArea(el.bounds);
+    const d=osmDist(oLat,oLng,lat,lng);
+    const s=osmScore(el,area);
+    return {el,lat,lng,area,d,s};
+  }).filter(x=>x&&x.s>10);
+
+  const filtered=osmCat==='all'?spots:spots.filter(x=>{
+    const cat=osmCategorize(x.el);
+    if(osmCat==='parking') return cat==='parking';
+    if(osmCat==='park') return cat==='park';
+    if(osmCat==='rest') return cat==='rest'||cat==='camp';
+    if(osmCat==='open') return cat==='open';
+    return true;
+  });
+  filtered.sort((a,b)=>Math.abs(b.s-a.s)>10?b.s-a.s:a.d-b.d);
+  const top=filtered.slice(0,20);
+
+  osmInitResultMap(oLat,oLng);
+  if(top.length>0){
+    osmAddSpotMarkers(top);
+    const lats=[oLat,...top.map(s=>s.lat)];
+    const lngs=[oLng,...top.map(s=>s.lng)];
+    osmLeaflet.fitBounds([[Math.min(...lats),Math.min(...lngs)],[Math.max(...lats),Math.max(...lngs)]],{padding:[30,30]});
+  }
+
+  if(top.length===0){
+    res.innerHTML=`<div class="empty-osm"><div class="empty-osm-icon">🔭</div>スポットが見つかりませんでした<br><br><small>検索範囲を広げるか種別を「すべて」にして再スキャンしてください</small></div>`;
+    return;
+  }
+
+  let html=`<div class="result-header"><span class="result-title">スキャン結果</span><span class="result-count">${top.length} 件</span></div><div class="spot-list">`;
+  top.forEach((sp,i)=>{
+    const {el,area,d,s}=sp;
+    const t=el.tags||{};
+    const name=esc(osmGetName(el)||osmTypeLabel(el).replace(/^.+? /,''));
+    const tl=esc(osmTypeLabel(el));
+    const fa=fmtArea(area);
+    const isPrivate=t.access==='private'||t.access==='no';
+    const gmapUrl=`https://maps.google.com/?q=${sp.lat},${sp.lng}`;
+    const airUrl=`https://maps.google.com/maps?q=${sp.lat},${sp.lng}&t=k`;
+    const osmUrl=`https://www.openstreetmap.org/${el.type}/${el.id}`;
+    const delay=(i*0.04+0.1).toFixed(2);
+    html+=`<div class="spot-card" style="animation-delay:${delay}s" onclick="osmHighlightCard(${i})">
+      <div class="spot-top">
+        <div class="spot-num ${i<3?'top':''}">${i+1}</div>
+        <div class="spot-body">
+          <div class="spot-name">${name}${isPrivate?' <span style="font-size:9px;color:var(--red)">[私有地]</span>':''}</div>
+          <div class="tag-row">
+            <span class="stag stag-type">${tl}</span>
+            ${fa?`<span class="stag stag-size">約${esc(fa)}</span>`:''}
+            ${t.fee==='no'?'<span class="stag stag-ok">無料</span>':''}
+            ${t.fee==='yes'?'<span class="stag stag-size">有料</span>':''}
+            ${t.lit==='yes'?'<span class="stag stag-ok">照明あり</span>':''}
+            ${t['no_camping']==='yes'?'<span class="stag stag-warn">キャンプ禁止</span>':''}
+          </div>
+          <div class="spot-meta">
+            <div class="meta-item">📏 <b>${fmtDist(d)}</b></div>
+            ${t.opening_hours?`<div class="meta-item">🕐 <b>${esc(t.opening_hours)}</b></div>`:''}
+            ${t.operator?`<div class="meta-item">🏢 <b>${esc(t.operator)}</b></div>`:''}
+          </div>
+          <div class="score-row">
+            <span class="score-label">適性</span>
+            <div class="score-bg"><div class="score-fill" style="width:${s}%"></div></div>
+            <span class="score-val">${s}</span>
+          </div>
+        </div>
+      </div>
+      <div class="spot-actions">
+        <a class="act-btn primary" href="${gmapUrl}" target="_blank" rel="noopener">🗺 Gマップ</a>
+        <a class="act-btn" href="${airUrl}" target="_blank" rel="noopener">🛰 航空写真</a>
+        <a class="act-btn" href="${osmUrl}" target="_blank" rel="noopener">◉ OSM</a>
+      </div>
+    </div>`;
+  });
+  html+='</div>';
+  res.innerHTML=html;
+}
+</script>
+</body>
+</html>
